@@ -9,6 +9,8 @@ from OpenGL.GLUT import *
 from Camera import Camera
 import math
 
+POINTS=10
+
 class RenderCube:
     '''This is the class that renders a rainbow cube
     Camera angles are handled by Camera.py.
@@ -21,9 +23,11 @@ class RenderCube:
         '''Sets up camera, modes, lighting, sounds, and objects.'''
         self.set_up_graphics()
         self.makeLights()
-        self.camera = Camera(0,0,-5)
+        self.camera = Camera(0,0,5)
+        self.verts=self.GenArray()
+        self.colors=self.GenArray('color')
 
-        glClearColor(.529,.8078,.980,0)
+        glClearColor(1,1,1,0)
 
         glutIdleFunc(self.display)
         glutDisplayFunc(self.display)
@@ -144,23 +148,43 @@ class RenderCube:
         glLightfv(GL_LIGHT2, GL_POSITION, self.diffuse_pos2)
         glLightfv(GL_LIGHT3, GL_POSITION, self.diffuse_pos2)
         glLightfv(GL_LIGHT4, GL_POSITION, self.diffuse_pos2)
+        
+    def GenArray(self, mode='vert',pts=POINTS):
+        vert_ls=[]
+        if mode=='color':
+            for m in range(pts):
+                for n in range(pts):
+                    for i in range(pts):
+                        tmp_tup=(i*.1,n*.1,m*.1,1)
+                        vert_ls.append(tmp_tup)
+        elif mode=='vert':
+            for m in range(pts):
+                for n in range(pts):
+                    for i in range(pts):
+                        tmp_tup=(i*.1,n*.1,m*.1)
+                        vert_ls.append(tmp_tup)
+        return vert_ls
 
     def MakeCube(self):
         '''Makes the desired cube.'''
-        glutSolidCube(2)
-        # verts = [0,0,0,1,0,0,0,1,0,0,0,1]
-        # color = [0,0,1,0,1,0,1,0,0,1,1,1]
-        # ind = [0,1,2,3]
-        # glVertexPointer(3, GL_FLOAT, 0,verts)
-        # glColorPointer(3, GL_FLOAT, 0, color)
-        # glBegin(GL_QUADS)
-        # glArrayElement(0)
-        # glArrayElement(1)
-        # glArrayElement(2)
-        # glArrayElement(3)
-        # glEnd()
-        # glDrawElements(GL_QUADS, 4, GL_UNSIGNED_INT, ind)
-        # glDrawArrays(GL_QUADS, 0, 4)
+        #TODO: GET COLORS WORKING/ PAD PIXELS
+        ind=[]
+        for i in range(len(self.verts)):
+            ind.append(i)
+        glEnableClientState(GL_COLOR_ARRAY)
+        glEnableClientState(GL_VERTEX_ARRAY)
+        glVertexPointer(3, GL_FLOAT, 0, self.verts)
+        glColorPointer(4, GL_FLOAT, 0, self.colors)
+        glBegin(GL_POINTS)
+        for i in range(len(self.verts)):
+            glArrayElement(i)
+        glEnd()
+        glDrawElements(GL_POINTS, len(self.verts), GL_UNSIGNED_INT,ind )
+        glDrawArrays(GL_POINTS, 0, len(self.verts))
+        glDisableClientState(GL_VERTEX_ARRAY)
+        glDisableClientState(GL_COLOR_ARRAY)
+
+
 
     def get_visible(self, lst):
         '''Only draws the points sitting in front of the camera.
