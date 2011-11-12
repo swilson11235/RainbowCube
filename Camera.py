@@ -7,8 +7,7 @@ from OpenGL.GLUT import *
 import math
 
 class Camera:
-    '''Stores and changes the camera position
-    while detecting collision'''
+    '''Stores and changes the camera position'''
 
     SPEED = 0
     WALK = .3
@@ -17,7 +16,7 @@ class Camera:
     WIDTH = .8
 
     def __init__(self, x=0, y=0, z=0):
-        '''Initializes everything, including sound'''
+        '''Initializes everything'''
         self.pos_X = x
         self.pos_Y = y
         self.pos_Z = z
@@ -53,7 +52,7 @@ class Camera:
             self.SPEED = self.WALK
 
         moved = self.move_by_keys(tmp_keys, 1)
-        if moved[0]:
+        if moved[0]: #If you moved then set the tmp cord. to the pos.
             self.pos_X = moved[1]
             self.pos_Y = moved[2]
             self.pos_Z = moved[3]
@@ -83,42 +82,23 @@ class Camera:
         '''Goes up or down. Always along the y axis'''
         self.pos_Y += amt
 
-    def get_sides(self, side):
-        '''Returns points of given side of bounding box'''
-        tmp_X = 0
-        tmp_Z = 0
-        
-        if side == 1:
-            tmp_Z = math.cos(self.rot_X*math.pi/180)*math.cos(self.rot_Y*math.pi/180)*(-self.WIDTH/2)
-            tmp_X = math.cos(self.rot_X*math.pi/180)*math.sin(self.rot_Y*math.pi/180)*(-self.WIDTH/2)
-        if side == 2:
-            tmp_Z = math.cos(self.rot_X*math.pi/180)*math.sin(-self.rot_Y*math.pi/180)*(self.WIDTH/2)
-            tmp_X = math.cos(self.rot_X*math.pi/180)*math.cos(self.rot_Y*math.pi/180)*(self.WIDTH/2)
-        if side == 3:
-            tmp_Z = math.cos(self.rot_X*math.pi/180)*math.cos(self.rot_Y*math.pi/180)*(-self.WIDTH/2)
-            tmp_X = math.cos(self.rot_X*math.pi/180)*math.sin(self.rot_Y*math.pi/180)*(-self.WIDTH/2)
-        if side == 4:
-            tmp_Z = math.cos(self.rot_X*math.pi/180)*math.sin(-self.rot_Y*math.pi/180)*(self.WIDTH/2)
-            tmp_X = math.cos(self.rot_X*math.pi/180)*math.cos(self.rot_Y*math.pi/180)*(self.WIDTH/2)
-
-        #Use to allow for change in height based on angle
-        self.pos_Y += math.cos(self.rot_X*math.pi/180)*math.sin(-self.rot_Z*math.pi/180)*amt
-        return (tmp_X, tmp_Z)
-
     def move_by_keys(self, tmp_keys, direction):
         '''returns the projected coordinates of the player,
         and takes a direction -- 1 = forward, 2 = reverse,
         also returns true upon movement'''
+        print 'in move by keys'
         tmp_X = self.pos_X
         tmp_Y = self.pos_Y
         tmp_Z = self.pos_Z
         moved = False
         if tmp_keys['a']:
+            print 'hit a'
             x, z = self.strafe(-self.SPEED*direction)
             tmp_Z += z
             tmp_X += x
             moved = True
         if tmp_keys['d']:
+            print 'hit d'
             x, z = self.strafe(self.SPEED*direction)
             tmp_Z += z
             tmp_X += x
@@ -150,3 +130,7 @@ class Camera:
         tmp_y = (self.pos_Y - y2)**2
         tmp_z = (self.pos_Z - z2)**2
         return math.sqrt(tmp_x+tmp_y+tmp_z)
+
+if __name__=='__main__':
+    camera=Camera()
+    camera.move()

@@ -32,15 +32,14 @@ class RenderCube:
         glutKeyboardFunc(self.keyPressed)
         glutKeyboardUpFunc(self.keyUp)
 
-#        glutSetCursor(GLUT_CURSOR_NONE)
-#        glutPassiveMotionFunc(self.mouseMove)
+        glutSetCursor(GLUT_CURSOR_NONE)
+        glutPassiveMotionFunc(self.mouseMove)
 
         glutMainLoop()
 
     def set_up_graphics(self):
         '''Sets up OpenGL to provide double buffering, RGB coloring,
-        depth testing, the correct window size, perspective
-        rendering/fulcrum clipping, and a title.'''
+        depth testing, the correct window size, and a title.'''
         glutInit()
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
         glutInitWindowSize(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
@@ -85,7 +84,7 @@ class RenderCube:
         self.camera.move()
         self.camera.renderCamera()
         self.renderLightSource()
-
+        glPushMatrix()
         # Set the object shininess, ambient, diffuse, and
         # specular reflections.
         glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, 75)
@@ -94,23 +93,23 @@ class RenderCube:
 
         glTranslate(0,0,0)
         self.MakeCube()
-                
+        glPopMatrix()
         glutSwapBuffers()
 
-    # def mouseMove(self, x, y):
-    #     '''Called when the mouse is moved.'''
-    #     factor = 2
+    def mouseMove(self, x, y):
+        '''Called when the mouse is moved.'''
+        factor = 2
         
-    #     tmp_x = (self.camera.mouse_x - x)/factor
-    #     tmp_y = (self.camera.mouse_y - y)/factor
-    #     if tmp_x > self.camera.ROTATE:
-    #         tmp_x = self.camera.ROTATE
-    #     self.camera.rotate(0, tmp_x, 0)
-    #     x = self.WINDOW_WIDTH/2
-    #     y = self.WINDOW_HEIGHT/2
-    #     glutWarpPointer(x, y)
-    #     self.camera.mouse_x = x
-    #     self.camera.mouse_y = y
+        tmp_x = (self.camera.mouse_x - x)/factor
+        tmp_y = (self.camera.mouse_y - y)/factor
+        if tmp_x > self.camera.ROTATE:
+            tmp_x = self.camera.ROTATE
+        self.camera.rotate(0, tmp_x, 0)
+        x = self.WINDOW_WIDTH/2
+        y = self.WINDOW_HEIGHT/2
+        glutWarpPointer(x, y)
+        self.camera.mouse_x = x
+        self.camera.mouse_y = y
         
     def keyPressed(self, key, x, y):
         '''Called when a key is pressed.'''
@@ -135,6 +134,7 @@ class RenderCube:
 
     def keyUp(self, key, x, y):
         '''Called when a key is released.'''
+        self.camera.keys[key.lower()] = False
         if not glutGetModifiers() == GLUT_ACTIVE_SHIFT:
             self.camera.keys["shift"] = False
 
