@@ -162,5 +162,26 @@ class RenderCube:
         # glDrawElements(GL_QUADS, 4, GL_UNSIGNED_INT, ind)
         # glDrawArrays(GL_QUADS, 0, 4)
 
+    def get_visible(self, lst):
+        '''Only draws the points sitting in front of the camera.
+        Everything behind it is left undrawn.'''
+        #works off a cube class that has all the points in it with methods to call information about dist, 
+        to_use = []
+        for point in lst:
+            c = point.dist
+            x,z = self.camera.project_move_other()
+            b = self.camera.get_camera_distance(x, 0, z)
+            a = point.get_dist(x, 0, z)
+            angle = 0
+            try:
+                num = ((b**2)+(c**2)-(a**2))/(2*b*c)
+                angle = math.acos(num)/math.pi*180
+            except:
+                pass
+            if angle > 90:
+                to_use.append(item)
+        return to_use
+
+
 if __name__=="__main__":
     cube = RenderCube()
