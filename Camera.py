@@ -67,16 +67,15 @@ class Camera:
         '''Strafes left or right, bassed on the angle'''
         tmp_Z = math.cos(self.rot_X*math.pi/180)*math.sin(-self.rot_Y*math.pi/180)*amt
         tmp_X = math.cos(self.rot_X*math.pi/180)*math.cos(self.rot_Y*math.pi/180)*amt
-        self.pos_Y += math.cos(self.rot_X*math.pi/180)*math.sin(-self.rot_Z*math.pi/180)*amt
-        return (tmp_X, tmp_Z)
+        tmp_Y = math.cos(self.rot_X*math.pi/180)*math.sin(-self.rot_Z*math.pi/180)*amt
+        return (tmp_X, tmp_Y, tmp_Z)
 
     def walk(self, amt):
         '''Walks forward and back based on the angle you're facing'''
         tmp_Z = math.cos(self.rot_X*math.pi/180)*math.cos(self.rot_Y*math.pi/180)*amt
         tmp_X = math.cos(self.rot_X*math.pi/180)*math.sin(self.rot_Y*math.pi/180)*amt
-        #Use to allow for change in height based on angle
-        self.pos_Y += math.cos(self.rot_Z*math.pi/180)*math.sin(-self.rot_X*math.pi/180)*amt
-        return (tmp_X, tmp_Z)
+        tmp_Y = math.cos(self.rot_X*math.pi/180)*math.sin(-self.rot_Z*math.pi/180)*amt      
+        return (tmp_X, tmp_Y, tmp_Z)
 
     def height(self, amt):
         '''Goes up or down. Always along the y axis'''
@@ -86,31 +85,32 @@ class Camera:
         '''returns the projected coordinates of the player,
         and takes a direction -- 1 = forward, 2 = reverse,
         also returns true upon movement'''
-        print 'in move by keys'
         tmp_X = self.pos_X
         tmp_Y = self.pos_Y
         tmp_Z = self.pos_Z
         moved = False
         if tmp_keys['a']:
-            print 'hit a'
-            x, z = self.strafe(-self.SPEED*direction)
+            x,y,z = self.strafe(-self.SPEED*direction)
             tmp_Z += z
             tmp_X += x
+            tmp_Y += y
             moved = True
         if tmp_keys['d']:
-            print 'hit d'
-            x, z = self.strafe(self.SPEED*direction)
+            x,y,z = self.strafe(self.SPEED*direction)
             tmp_Z += z
+            tmp_Y += y
             tmp_X += x
             moved = True
         if tmp_keys['w']:
-            x, z = self.walk(-self.SPEED*direction)
+            x,y,z = self.walk(-self.SPEED*direction)
             tmp_Z += z
+            tmp_Y += y
             tmp_X += x
             moved = True
         if tmp_keys['s']:
-            x, z = self.walk(self.SPEED*direction)
+            x,y,z = self.walk(self.SPEED*direction)
             tmp_Z += z
+            tmp_Y += y
             tmp_X += x
             moved = True
         return (moved, tmp_X, tmp_Y, tmp_Z)
@@ -124,6 +124,7 @@ class Camera:
         tmp_X += x
         return (tmp_X, tmp_Z)'''
 
+#might or might not be useful
     def get_camera_distance(self, x2, y2, z2):
         '''Returns the distance from given point'''
         tmp_x = (self.pos_X - x2)**2
